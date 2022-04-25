@@ -2,7 +2,7 @@
     "basic": {
         "seed": 5,
         "fastPass": "paper",
-        "population": 10,
+        "population": 1,
         "perfect_arrivals": true,
         "hourly_percent": {
             "8": 0
