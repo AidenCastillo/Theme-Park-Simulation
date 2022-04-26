@@ -55,7 +55,7 @@ class ParkSim:
                         i.CurrentWait = 0
 
             self.timeChange()
-            self.log
+            self.log(self.agents, "data/log.json")
             
     
     def CreateAgents(self):
@@ -78,11 +78,14 @@ class ParkSim:
         else:
             sys.exit()
     def log(self, data, file):
-        with open(file) as f:
-            current = json.loads(f.read())
-        current.append(data)
-        with open(file, "w") as f:
-            f.write(json.dumps(current))
+        if logging:
+            with open(file) as f:
+                current = json.loads(f.read())
+            for i in data:
+                
+                current.append(i.location)
+            with open(file, "w") as f:
+                f.write(json.dumps(current))
 def main():
     simulation = ParkSim()
     simulation.runSim()

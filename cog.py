@@ -1,1 +1,2 @@
 version = "basic"
+logging = False
