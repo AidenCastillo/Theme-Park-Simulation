@@ -39,30 +39,28 @@ class ParkSim:
         self.agents = list()
 
     def runSim(self):
-        self.CreateAgents()
+        self.CreateAgents(100)
         print(self.agents)
         while True:
+            self.event()
+          
             for i in self.agents:
-                
+              
                 if i.location == "Hub":
                     self.weightedChoice(i, "ride")
-                    print("here1")
                 elif i.location in rideNames:
-                    print("here2")
                     if i.CurrentWait == archeType[i.arche]["wait"]:
                         self.weightedChoice(i, "ride")
-                        print("here4")
                         i.CurrentWait = 0
 
-            self.timeChange()
             self.log(self.agents, "data/log.json")
-            
+            self.timeChange()            
     
-    def CreateAgents(self):
-        for i in range(settings[version]['population']):
+    def CreateAgents(self, count):
+        for i in range(int(count)):
             agent = person(random.choice(archeNames), "Hub", 0)
             self.agents.append(agent)
-
+    
     def weightedChoice(self, target, type):
         weight = list()
         if  type == "ride":
@@ -71,12 +69,17 @@ class ParkSim:
                 
             target.location = random.choices(rideNames, weights=weight)[0]
     def timeChange(self):
-        if self.time <= 22:
+        if self.time < 22:
             self.time += 1
             for i in self.agents:
                 i.CurrentWait += 1
-        else:
+        elif self.time == 22:
+            print(self.time)
             sys.exit()
+    def event(self):
+        count = settings[version]['population'] * settings[version]['hourly_percent'][str(self.time)]
+        print(count)
+        self.CreateAgents(count)
     def log(self, data, file):
         if logging:
             with open(file) as f:
@@ -93,5 +96,5 @@ def main():
             
 
 #start sim
-if __name__ == '__main__':
-    main()
+#if __name__ == '__main__':
+main()
