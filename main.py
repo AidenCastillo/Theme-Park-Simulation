@@ -84,9 +84,13 @@ class ParkSim:
         if logging:
             with open(file) as f:
                 current = json.loads(f.read())
-            for i in data:
-                
-                current.append(i.location)
+            form = {
+                "Rides": {
+                    "hexagon": 0,
+                    "triangle": 0
+                }
+            }
+            current.append(form)
             with open(file, "w") as f:
                 f.write(json.dumps(current))
 def main():
