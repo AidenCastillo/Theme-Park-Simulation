@@ -58,16 +58,21 @@ class ParkSim:
     
     def CreateAgents(self, count):
         for i in range(int(count)):
-            agent = person(random.choice(archeNames), "Hub", 0)
+            agent = person(weightedChoice(type="arche"), "Hub", 0)
             self.agents.append(agent)
     
-    def weightedChoice(self, target, type):
+    def weightedChoice(self, target=None, type=None):
         weight = list()
-        if  type == "ride":
+        if type == "ride":
             for x in rideNames:
                 weight.append(rides[x]["popularity"])
+                target.location = random.choices(rideNames, weights=weight)[0]
+
+        elif type == "arche":
+            for x in archeNames:
+                weight.append(settings["agent_distribution"][x])
+                return random.choices(archeNames, weights=weight)[0]
                 
-            target.location = random.choices(rideNames, weights=weight)[0]
     def timeChange(self):
         if self.time < 22:
             self.time += 1
