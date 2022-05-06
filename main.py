@@ -45,57 +45,89 @@ class ParkSim:
             self.event()
           
             for i in self.agents:
-              
+
+                '''
+                if the agent's location is `hub`, send the agent to a new ride
+
+                if the agent's location is a ride, check if their `CurrentWait` is at the max for their archeType
+                if `CurrentWait` is at max, remove them from the queue or line, send to new location, and change `CurrentWait` to 0
+                '''
                 if i.location == "Hub":
                     self.weightedChoice(i, "ride")
                 elif i.location in rideNames:
                     if i.CurrentWait == archeType[i.arche]["wait"]:
+                        rides[i.location]['reg_queue'].remove(i)
+                        
                         self.weightedChoice(i, "ride")
                         i.CurrentWait = 0
 
+            self.FindWait(rides['hexagon'])
             self.log(self.agents, "data/log.json")
             self.timeChange()            
     
     def CreateAgents(self, count):
+        '''
+        Initiates the person class and places in `self.agents`
+
+        Count: Number of Agents to create
+        '''
         for i in range(int(count)):
-            agent = person(weightedChoice(type="arche"), "Hub", 0)
+            agent = person(self.weightedChoice(type="arche"), "Hub", 0)
             self.agents.append(agent)
     
     def weightedChoice(self, target=None, type=None):
+        '''
+        Random choice that has weights for each choice in list
+
+        type: Which kind of weighted choice. 'ride, 'arche'
+        target: When type is 'ride', the target is the object thats location will be changed
+        '''
         weight = list()
         if type == "ride":
             for x in rideNames:
                 weight.append(rides[x]["popularity"])
-                target.location = random.choices(rideNames, weights=weight)[0]
+            ride = random.choices(rideNames, weights=weight)[0] 
+            target.location = ride
+            rides[ride]['reg_queue'].append(target)
 
         elif type == "arche":
             for x in archeNames:
-                weight.append(settings["agent_distribution"][x])
-                return random.choices(archeNames, weights=weight)[0]
-                
+                weight.append(settings[version]["agent_distribution"][x])
+            return random.choices(archeNames, weights=weight)[0]
+    def FindWait(self, ride):
+        '''
+        Finds selected rides wait time
+
+        wait (in hours) = (queue/throughput)
+        wait (in minutes) = (queue/throughput) 60
+        
+        '''
+        wait = (len(ride['reg_queue']) / ride['hourly_throughput']) * 60
+        print(len(ride['reg_queue']))
+        print(wait)
+        return wait
+  
     def timeChange(self):
         if self.time < 22:
             self.time += 1
             for i in self.agents:
                 i.CurrentWait += 1
         elif self.time == 22:
-            print(self.time)
+            print("exit")
             sys.exit()
+
     def event(self):
         count = settings[version]['population'] * settings[version]['hourly_percent'][str(self.time)]
-        print(count)
         self.CreateAgents(count)
     def log(self, data, file):
         if logging:
             with open(file) as f:
                 current = json.loads(f.read())
-            form = {
-                "Rides": {
-                    "hexagon": 0,
-                    "triangle": 0
-                }
-            }
-            current.append(form)
+            with open("data/template.json") as f:
+                form = json.loads(f.read())
+
+            
+                
             with open(file, "w") as f:
                 f.write(json.dumps(current))
 def main():

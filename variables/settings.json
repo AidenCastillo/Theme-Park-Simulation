@@ -2,7 +2,7 @@
     "basic": {
         "seed": 5,
         "fastPass": "paper",
-        "population": 100,
+        "population": 10000,
         "perfect_arrivals": true,
         "hourly_percent": {
             "8": 0.2,
@@ -25,8 +25,8 @@
         "exp_threshold": 1,
         "exp_limit": 3,
         "agent_distribution": {
-            "Tourist": 25,
-            "Visitor": 25,
+            "tourist": 25,
+            "visitor": 25,
             "ride_favorer": 15,
             "ride_enthusiast": 15,
             "activity_favorer": 15,
