@@ -1,5 +1,6 @@
 import os
 import sys
+import logging
 os.chdir(os.getcwd())
 
 import json
@@ -120,12 +121,12 @@ class ParkSim:
         count = settings[version]['population'] * settings[version]['hourly_percent'][str(self.time)]
         self.CreateAgents(count)
     def log(self, data, file):
-        if logging:
+        if MakeLog:
             with open(file) as f:
                 current = json.loads(f.read())
             with open("data/template.json") as f:
                 form = json.loads(f.read())
-
+            form['version']
             
                 
             with open(file, "w") as f:

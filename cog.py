@@ -1,3 +1,3 @@
 version = "basic"
-logging = False
+MakeLog = True
 logRewite = True

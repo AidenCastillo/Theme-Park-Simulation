@@ -1,6 +1,7 @@
 {
+    "version": "",
     "ride": {
-        "hexagon": 0,
+        "hexagon": Null,
         "triangle": 0
     },
     "population": {
