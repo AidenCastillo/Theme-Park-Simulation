@@ -1,3 +1,3 @@
 version = "basic"
-MakeLog = True
-logRewite = True
+makeLog = True
+logRewrite = True

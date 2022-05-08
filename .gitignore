@@ -3,3 +3,4 @@ __pycache__
 test.py
 .replit
 .gitpod.yml
+/data/log.json

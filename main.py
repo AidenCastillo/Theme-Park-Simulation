@@ -1,6 +1,6 @@
+from cmath import inf
 import os
 import sys
-import logging
 os.chdir(os.getcwd())
 
 import json
@@ -63,7 +63,6 @@ class ParkSim:
                         i.CurrentWait = 0
 
             self.FindWait(rides['hexagon'])
-            self.log(self.agents, "data/log.json")
             self.timeChange()            
     
     def CreateAgents(self, count):
@@ -115,22 +114,33 @@ class ParkSim:
                 i.CurrentWait += 1
         elif self.time == 22:
             print("exit")
+            self.log("data/log.json")
             sys.exit()
 
     def event(self):
-        count = settings[version]['population'] * settings[version]['hourly_percent'][str(self.time)]
+        percent = settings[version]['hourly_percent'][str(self.time)] / 100
+        count = settings[version]['population'] * percent
         self.CreateAgents(count)
-    def log(self, data, file):
-        if MakeLog:
-            with open(file) as f:
-                current = json.loads(f.read())
+    def log(self, file):
+        if makeLog:
             with open("data/template.json") as f:
                 form = json.loads(f.read())
-            form['version']
-            
-                
-            with open(file, "w") as f:
-                f.write(json.dumps(current))
+            form['version'] = version
+            form['ride']['hexagon']['waitTime'] = self.FindWait(rides['hexagon'])
+            form['ride']['triangle']['waitTime'] = self.FindWait(rides['triangle'])
+
+            form['population']['total'] = settings[version]['population']
+
+            for x in self.agents:
+                form['population'][x.arche] += 1
+
+            if logRewrite == True:
+
+                with open(file, "w") as f:
+                    f.write(json.dumps(form, indent=4))
+            else:
+                with open(file, "a") as f:
+                    f.write(json.dumps(form, indent=4))
 def main():
     simulation = ParkSim()
     simulation.runSim()

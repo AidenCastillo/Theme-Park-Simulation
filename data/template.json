@@ -1,10 +1,22 @@
 {
     "version": "",
     "ride": {
-        "hexagon": Null,
-        "triangle": 0
+        "hexagon": {
+            "waitTime": 0,
+            "reg_queue": 0
+        },
+        "triangle": {
+            "waitTime": 0,
+            "reg_queue": 0
+        }
     },
     "population": {
-        "Tourist"
+        "total": 0,
+        "tourist": 0,
+        "visitor": 0,
+        "ride_enthusiast": 0,
+        "ride_favorer": 0,
+        "activity_enthusiast": 0,
+        "activity_favorer": 0
     }
 }
