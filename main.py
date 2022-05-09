@@ -10,6 +10,7 @@ from cog import *
 
 with open("variables/settings.json") as f:
     settings = json.loads(f.read())
+    settings = settings[version]
 with open("variables/archetype.json") as f:
     archeType = json.loads(f.read())
     print(archeType)
@@ -23,10 +24,11 @@ with open("variables/ride.json") as f:
         rideNames.append(x)
 
 class person:
-    def __init__(self, arche, location, CurrentWait):
+    def __init__(self, arche, location):
         self.arche = arche
         self.location = location
-        self.CurrentWait = CurrentWait
+        self.CurrentWait = 0
+        self.stay = 0
 
 class ParkSim:
     def __init__(self):
@@ -35,7 +37,7 @@ class ParkSim:
 
         Time: Runs on military time for simplicity
         '''
-        self.seed = settings[version]['seed']
+        self.seed = settings['seed']
         self.time = 8
         self.agents = list()
 
@@ -46,7 +48,6 @@ class ParkSim:
             self.event()
           
             for i in self.agents:
-
                 '''
                 if the agent's location is `hub`, send the agent to a new ride
 
@@ -72,7 +73,7 @@ class ParkSim:
         Count: Number of Agents to create
         '''
         for i in range(int(count)):
-            agent = person(self.weightedChoice(type="arche"), "Hub", 0)
+            agent = person(self.weightedChoice(type="arche"), "Hub")
             self.agents.append(agent)
     
     def weightedChoice(self, target=None, type=None):
@@ -92,7 +93,7 @@ class ParkSim:
 
         elif type == "arche":
             for x in archeNames:
-                weight.append(settings[version]["agent_distribution"][x])
+                weight.append(settings["agent_distribution"][x])
             return random.choices(archeNames, weights=weight)[0]
     def FindWait(self, ride):
         '''
@@ -108,20 +109,35 @@ class ParkSim:
         return wait
   
     def timeChange(self):
+        """
+        If the time is less than 22, add one to the time and add one to the current wait time of each
+        agent. If the time is equal to 22, log the data
+        """
         if self.time < 22:
             self.time += 1
             for i in self.agents:
                 i.CurrentWait += 1
+                i.stay += 1
         elif self.time == 22:
             print("exit")
             self.log("data/log.json")
             sys.exit()
 
     def event(self):
-        percent = settings[version]['hourly_percent'][str(self.time)] / 100
-        count = settings[version]['population'] * percent
+        percent = settings['hourly_percent'][str(self.time)] / 100
+        count = settings['population'] * percent
         self.CreateAgents(count)
+
+        for x in self.agents:
+            if x.stay == archeType[x.arche]['stay']:
+                self.agents.remove(x)
+
     def log(self, file):
+        """
+        It takes a list of agents and writes their data to a json file
+        
+        :param file: the file to write to
+        """
         if makeLog:
             with open("data/template.json") as f:
                 form = json.loads(f.read())
@@ -129,7 +145,7 @@ class ParkSim:
             form['ride']['hexagon']['waitTime'] = self.FindWait(rides['hexagon'])
             form['ride']['triangle']['waitTime'] = self.FindWait(rides['triangle'])
 
-            form['population']['total'] = settings[version]['population']
+            form['population']['total'] = settings['population']
 
             for x in self.agents:
                 form['population'][x.arche] += 1

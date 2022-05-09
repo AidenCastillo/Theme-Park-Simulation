@@ -3,7 +3,6 @@
         "seed": 5,
         "fastPass": "paper",
         "population": 10000,
-        "perfect_arrivals": true,
         "hourly_percent": {
             "8": 10,
             "9": 20,

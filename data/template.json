@@ -3,11 +3,13 @@
     "ride": {
         "hexagon": {
             "waitTime": 0,
-            "reg_queue": 0
+            "reg_queue": 0,
+            "exp_queue": 0
         },
         "triangle": {
             "waitTime": 0,
-            "reg_queue": 0
+            "reg_queue": 0,
+            "exp_queue": 0
         }
     },
     "population": {
