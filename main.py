@@ -131,6 +131,17 @@ class ParkSim:
             for i in self.agents:
                 i.CurrentWait += 1
                 i.stay += 1
+            if self.time > 8:
+                for i in rides:
+                    ratio = rides[i]['expedited_queue_ratio']
+                    n = int(rides[i]['hourly_throughput'] * ratio)
+                    while n > 0:
+                        print(rides[i]['exp_queue'])
+                        x = rides[i]['exp_queue'].pop(0)
+                        self.agents.remove(x)
+                        n-=1
+
+                
         elif self.time == 22:
             print("exit")
             self.log("data/log.json")
