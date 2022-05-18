@@ -20,5 +20,38 @@
         "adult_eligible": true,
         "reg_queue": [],
         "exp_queue": []
+    },
+    "circle": {
+        "run_time": 4,
+        "hourly_throughput": 1000,
+        "popularity": 10,
+        "expedited_queue": true,
+        "expedited_queue_ratio":0.8,
+        "child_eligible": true,
+        "adult_eligible": true,
+        "reg_queue": [],
+        "exp_queue": []
+    },
+    "rhombus": {
+        "run_time": 4,
+        "hourly_throughput": 1000,
+        "popularity": 10,
+        "expedited_queue": true,
+        "expedited_queue_ratio":0.8,
+        "child_eligible": true,
+        "adult_eligible": true,
+        "reg_queue": [],
+        "exp_queue": []
+    },
+    "trapizoid": {
+        "run_time": 4,
+        "hourly_throughput": 1000,
+        "popularity": 10,
+        "expedited_queue": true,
+        "expedited_queue_ratio":0.8,
+        "child_eligible": true,
+        "adult_eligible": true,
+        "reg_queue": [],
+        "exp_queue": []
     }
 }

@@ -13,7 +13,6 @@ with open("variables/settings.json") as f:
     settings = settings[version]
 with open("variables/archetype.json") as f:
     archeType = json.loads(f.read())
-    print(archeType)
     archeNames = []
     for x in archeType:
         archeNames.append(x)
@@ -25,6 +24,7 @@ with open("variables/ride.json") as f:
 
 class person:
     def __init__(self, arche, location, exp_ability=False):
+        self.tag = 0
         self.arche = arche
         self.location = location
         self.CurrentWait = 0
@@ -39,14 +39,14 @@ class ParkSim:
         Time: Runs on military time for simplicity
         '''
         self.seed = settings['seed']
-        self.time = 8
+        self.time = 7
         self.agents = list()
 
     def runSim(self):
         self.CreateAgents(100)
         while True:
             self.event()
-          
+            self.timeChange()
             for i in self.agents:
                 '''
                 if the agent's location is `hub`, send the agent to a new ride
@@ -66,7 +66,7 @@ class ParkSim:
                         i.CurrentWait = 0
 
             self.FindWait(rides['hexagon'])
-            self.timeChange()            
+            
     
     def CreateAgents(self, count):
         '''
@@ -136,11 +136,20 @@ class ParkSim:
                     ratio = rides[i]['expedited_queue_ratio']
                     n = int(rides[i]['hourly_throughput'] * ratio)
                     while n > 0:
-                        print(rides[i]['exp_queue'])
-                        x = rides[i]['exp_queue'].pop(0)
-                        self.agents.remove(x)
+                        try:
+                            rides[i]['exp_queue'] = rides[i]['exp_queue'].remove(0)
+                        except:
+                            try:
+                                rides[i]['reg_queue'] = rides[i]['reg_queue'].remove(0)
+                            except:
+                                break
+                        
                         n-=1
-
+                for i in self.agents:                    
+                    if i.location == 'Hub':
+                        continue
+                    elif i not in rides[i.location]['exp_queue'] and rides[i.location]['reg_queue']:
+                        i.location = 'Hub'
                 
         elif self.time == 22:
             print("exit")
@@ -148,13 +157,16 @@ class ParkSim:
             sys.exit()
 
     def event(self):
-        percent = settings['hourly_percent'][str(self.time)] / 100
-        count = settings['population'] * percent
-        self.CreateAgents(count)
+        if self.time == 7:
+            pass
+        else:
+            percent = settings['hourly_percent'][str(self.time)] / 100
+            count = settings['population'] * percent
+            self.CreateAgents(count)
 
-        for x in self.agents:
-            if x.stay == archeType[x.arche]['stay']:
-                self.agents.remove(x)
+            for x in self.agents:
+                if x.stay == archeType[x.arche]['stay']:
+                    self.agents.remove(x)
 
     def log(self, file):
         """
@@ -166,15 +178,13 @@ class ParkSim:
             with open("data/template.json") as f:
                 form = json.loads(f.read())
             form['version'] = version
-            form['ride']['hexagon']['waitTime'] = self.FindWait(rides['hexagon'])[0]
-            form['ride']['hexagon']['reg_queue'] = self.FindWait(rides['hexagon'])[1]
-            form['ride']['hexagon']['exp_queue'] = self.FindWait(rides['hexagon'])[2]
-            form['ride']['triangle']['waitTime'] = self.FindWait(rides['triangle'])[0]
-            form['ride']['triangle']['reg_queue'] = self.FindWait(rides['triangle'])[1]
-            form['ride']['triangle']['exp_queue'] = self.FindWait(rides['triangle'])[2]
-
             form['population']['total'] = settings['population']
-
+            
+            for x in rides:
+                form['ride'][x]['waitTime'] = self.FindWait(rides[x])[0]
+                form['ride'][x]['reg_queue'] = self.FindWait(rides[x])[1]
+                form['ride'][x]['exp_queue'] = self.FindWait(rides[x])[2]
+            
             for x in self.agents:
                 form['population'][x.arche] += 1
 
