@@ -2,11 +2,12 @@ from cmath import inf
 import os
 import sys
 os.chdir(os.getcwd())
-
+total = 0
 import json
 import random
 from cog import *
-
+import logging
+logging.basicConfig(filename='report.log', filemode='w', format='%(asctime)s - %(message)s', level=logging.DEBUG)
 
 with open("variables/settings.json") as f:
     settings = json.loads(f.read())
@@ -21,7 +22,6 @@ with open("variables/ride.json") as f:
     rideNames = []
     for x in rides:
         rideNames.append(x)
-
 class person:
     def __init__(self, arche, location, exp_ability=False):
         self.tag = 0
@@ -74,10 +74,12 @@ class ParkSim:
 
         Count: Number of Agents to create
         '''
+        
         for i in range(int(count)):
             agent = person(self.weightedChoice(type="arche"), "Hub", self.weightedChoice(type="exp_ability"))
             self.agents.append(agent)
-    
+        global total
+        total += count
     def weightedChoice(self, target=None, type=None):
         '''
         Random choice that has weights for each choice in list
@@ -116,8 +118,11 @@ class ParkSim:
         wait (in minutes) = (queue/throughput) 60
         
         '''
-        regWait = (len(ride['reg_queue']) / ride['hourly_throughput']) * 60
-        expWait = (len(ride['exp_queue']) / ride['hourly_throughput']) * 60
+        
+        expRatio = ride['hourly_throughput'] * ride['expedited_queue_ratio']
+        regRatio = ride['hourly_throughput'] - expRatio
+        regWait = (len(ride['reg_queue']) / regRatio) * 60
+        expWait = (len(ride['exp_queue']) / expRatio) * 60
         wait = (regWait + expWait) / 2
         return wait, regWait, expWait
   
@@ -128,6 +133,7 @@ class ParkSim:
         """
         if self.time < 22:
             self.time += 1
+            logging.info('Time: %s, Population: %a', self.time, total)
             for i in self.agents:
                 i.CurrentWait += 1
                 i.stay += 1

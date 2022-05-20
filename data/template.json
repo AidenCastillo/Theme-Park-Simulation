@@ -19,7 +19,7 @@
         "rhombus": {
             "waitTime": 0,
             "reg_queue": 0,
-            "exp_qeue": 0
+            "exp_queue": 0
         },
         "trapizoid": {
             "waitTime": 0,
